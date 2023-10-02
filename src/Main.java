@@ -64,10 +64,17 @@ public class Main {
 
      */
     public static void addProduct() {
+        boolean exitAddProduct = false;
+        do {
             double priceInput = 0;
-            System.out.print("Ange namnet på nya produkten: ");
+            System.out.println();
+            System.out.print("tryck 0 för huvudmeny\nAnge namnet på nya produkten: ");
             String nameInput;
-            nameInput= checkIfBlank();
+            nameInput = checkIfBlank();
+            if (nameInput.equals("0")){
+                break;
+            }
+
 
             System.out.print("Ange pris på produkten (Endast siffror): ");
             boolean priceIn = false;
@@ -77,23 +84,26 @@ public class Main {
                 input.nextLine();
                 priceIn = true;
             } catch (Exception e){
-                System.out.println("felaktig inmatning, använd kommatecken och Skriv en siffra");
+                System.out.println("Felaktig inmatning, använd kommatecken och Skriv en siffra");
                 input.next();
                 }
             }
             //lägg till enhetspris!!!
 
-            System.out.print("Ange produkt kategori (Frukt eller Grönt?): ");
+            System.out.print("tryck 0 för huvudmeny\nAnge produkt kategori (Frukt eller Grönt?): ");
             String categoryInput = checkIfBlank();
 
 
-            System.out.print("ange underkategori(ex. äpplen, paprika, stenfrukter): ");
+            System.out.print("tryck 0 för huvudmeny\nAnge underkategori(ex. äpplen, paprika, stenfrukter): ");
             String subCategory = checkIfBlank();
 
 
             Product a = new Product(nameInput, priceInput, new String[] {categoryInput,subCategory});
             listOfProducts.add(a);
             System.out.println("Du har lagt till: " + a);
+
+            break;
+        } while (!exitAddProduct);
 
     }
     public static String checkIfBlank() {
@@ -103,8 +113,12 @@ public class Main {
             productName = input.nextLine();
             if (productName.isBlank()) {
                 System.out.println("Ange ett namn: ");
-            }else {
+            } else {
                 checkInput = true;
+            }
+            if (productName.equals("0")){
+                System.out.println("återgår till huvudmeny..");
+                return "0";
             }
 
         }
@@ -179,15 +193,16 @@ public class Main {
 
     public static Product charSearchProduct(ArrayList<Product> listOfProducts, String searchQuest){
         Product p = null;
+        System.out.println("Hittade följande: \n");
         for (Product pro : listOfProducts) {
             if (pro.getName().toLowerCase().contains(searchQuest.toLowerCase())){
-                System.out.println("Hittade: " + pro);
+                System.out.println(pro);
                 p = pro;
 
             } else if (pro.getCategory().toLowerCase().contains(searchQuest.toLowerCase())) {
 
 
-                System.out.println("Hittade: " + pro);
+                System.out.println(pro);
                 p = pro;
 
             }
@@ -220,49 +235,56 @@ public class Main {
         System.out.println("Priset blir: " + sum + "kr");
     }
     public static void editProduct(){
+        boolean exitEdit = false;
 
-
-
-            Product found;
+        Product found = null;
+        String[] array;
+        String chosenOne = null;
+        do {
             System.out.println("Administrationen\n--- REDIGERA PRODUKT ---\n");
             printAllCategories();
             System.out.println();
 //vad händer om sökt produkt inte finns i lista???
             System.out.println("(tryck 0 för huvudmeny)\nSök på KATEGORI eller PRODUKTNAMN: ");
             String nextChoice = checkIfBlank();
+            if (nextChoice.equals("0")){
+                break;
+            }
             found = charSearchProduct(listOfProducts, nextChoice);
-            String[] array;
             System.out.println("(tryck 0 för huvudmeny)\nBEKRÄFTA PRODUKTNAMN: ");
-            String chosenOne = input.nextLine();
-
-
-
-            if (found!=null) {
-                boolean exitToMainMenu = false;
-                array = new String[]{chosenOne};
-                do {
-                    System.out.println("ALTERNATIV för: " + array[0]);
-                    //en till metod för att väga???
-                    System.out.println("1. Ändra pris ");
-                    System.out.println("2. Ändra namn");
-                    System.out.println("3. Radera");
-                    System.out.println("0. Återgå till Huvudmeny");
-                    System.out.println("Ditt val: ");
-
-                    int userChoice = input.nextInt();
-                    input.nextLine();
-                    switch (userChoice) {
-                        case 0 -> exitToMainMenu = true;
-                        case 1 -> changePrice(array[0]);
-                        case 2 -> changeName(array[0]);
-                        case 3 -> deleteProduct(array[0]);
-                    }
-                    break;
-                } while (!exitToMainMenu);
-            } else {
-                System.out.println("*** NOT FOUND, TRY AGAIN ***");
+            chosenOne = checkIfBlank();
+            if (chosenOne.equals("0")){
+                break;
             }
 
+
+
+        if (found!=null) {
+
+            array = new String[]{chosenOne};
+
+                System.out.println("ALTERNATIV för: " + array[0]);
+                //en till metod för att väga???
+                System.out.println("1. Ändra pris ");
+                System.out.println("2. Ändra namn");
+                System.out.println("3. Radera");
+                System.out.println("0. Återgå till Huvudmeny");
+                System.out.println("Ditt val: ");
+
+                int userChoice = input.nextInt();
+                input.nextLine();
+                switch (userChoice) {
+                    case 0 -> exitEdit = true;
+                    case 1 -> changePrice(array[0]);
+                    case 2 -> changeName(array[0]);
+                    case 3 -> deleteProduct(array[0]);
+                }
+
+
+        } else {
+            System.out.println("*** NOT FOUND, TRY AGAIN ***");
+        }
+    } while (!exitEdit);
     }
 
 
@@ -292,10 +314,9 @@ public class Main {
         for (Product listOfProduct : listOfProducts) {
             if (chosenProduct.equals(listOfProduct.getName())) {
                 System.out.print("Skriv nytt namn: ");
-                String newName = input.nextLine();
+                String newName = checkIfBlank();
                 listOfProduct.setName(newName);
                 System.out.println("Namnet för " + chosenProduct + " har ändrats till " + newName);
-
                 break;
 
             }
