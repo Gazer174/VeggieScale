@@ -10,7 +10,7 @@ public class Main {
         Product p2 = new Product("kålrot", 15,  new String[]{"grönt","rotfrukter"});
         Product p3 = new Product("morot", 14,  new String[]{"grönt","rotfrukter"});
         Product p4 = new Product("pepparrot", 17, new String[]{"grönt","rotfrukter"});
-        Product p5 = new Product("rött äpple", 13, new String[]{"frukt", "äpplen"});
+        Product p5 = new Product("vitt äpple", 13, new String[]{"frukt", "äpplen"});
         listOfProducts.add(p1);
         listOfProducts.add(p2);
         listOfProducts.add(p3);
