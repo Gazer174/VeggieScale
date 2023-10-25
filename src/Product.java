@@ -1,24 +1,32 @@
 import java.util.Arrays;
 
 public class Product {
-    public boolean equalsIgnoreCase;
     private String name;
     private double price;
-    private String[] category;
+    private String kampanj;
+    private String category;
    
 
-    public Product(String[] category){
-        this.category = category;
+    public Product(String kampanj, String name, double price){
+        this.kampanj = kampanj;
+        this.name = name;
+        this.price = price;
     }
     public Product(String name, double price){
         this.name = name;
         this.price = price;
     }
-    public Product (String name, double price, String[] category){
+    public Product (String name, double price, String category){
         this.name = name;
         this.price = price;
         this.category = category;
     }
+
+    public Product(Product product, double price) {
+        this.name = product.getName();
+        this.price = price;
+    }
+
 
 
 
@@ -31,7 +39,7 @@ public class Product {
     }
 
     public String getCategory() {
-        return Arrays.toString(this.category);
+        return this.category;
     }
 
     public void setName(String name) {
@@ -42,7 +50,7 @@ public class Product {
         this.price = price;
     }
 
-    public void setCategory(String[] category) {
+    public void setCategory(String category) {
         this.category = category;
     }
 
@@ -50,10 +58,10 @@ public class Product {
     public String toString(){
 
         if (category != null && price !=0){
-            return this.name + " " + this.price + "kr/kg i kategorin "+ Arrays.toString(this.category);
+            return this.name + " " + this.price + "kr/kg i kategorin "+ this.category;
         }
         if (category != null){
-            return this.name + "i kategorin " + Arrays.toString(this.category) + " *inget pris inlagt*";
+            return this.name + " i kategorin " + this.category + " *inget pris inlagt*";
         }
         if (price != 0 ){
             return this.name + " " + this.price + "kr/kg";
