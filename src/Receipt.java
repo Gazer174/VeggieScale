@@ -1,41 +1,63 @@
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class Receipt {
-    private int number;
-    private int Date;
-    private ArrayList<Product> shoppingCart;
-    private int nOfReceipts;
 
-    public int getNumber() {
-        return number;
+    private ShoppingCart boughtItems;
+
+    public Receipt(ShoppingCart boughtItems) {
+        this.boughtItems = boughtItems;
+        createNewReceipt();
     }
 
-    public void setNumber(int number) {
-        this.number = number;
+
+    public String getDate() {
+        Date a = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat();
+        String str = formatter.format(a);
+        return str;
     }
 
-    public int getDate() {
-        return Date;
-    }
+    public void createNewReceipt() {
+        File receiptFile;
+        File receiptDir = new File("receiptdir");
 
-    public void setDate(int date) {
-        Date = date;
-    }
+        if(!receiptDir.exists()){
+            boolean created = receiptDir.mkdirs();
+            if(created){
+                //System.out.println("Kvitto mapp skapad framgångsrikt");
+            } else {
+                //System.out.println("Mappen skapades inte");
+            }
+        } else {
+           // System.out.println("Mappen finns redan");
+        }
+        try {
+            //skapar kvitto-fil
 
-    public ArrayList<Product> getShoppingCart() {
-        return shoppingCart;
-    }
+            receiptFile = new File(receiptDir, getFormattedTime() + ".txt");
+            System.out.println("Kvitto är utskrivet");
 
-    public void setShoppingCart(ArrayList<Product> shoppingCart) {
-        this.shoppingCart = shoppingCart;
-    }
+            //skriver i kvitto-fil
+            FileWriter fileWriter = new FileWriter(receiptFile);
+            fileWriter.write(getDate() + "\n" + boughtItems);
 
-    public int getnOfReceipts() {
-        return nOfReceipts;
-    }
+            fileWriter.close();
+        } catch (IOException e) {
+            System.out.println("kunde inte skriva ut kvitto");
+        }
 
-    public void setnOfReceipts(int nOfReceipts) {
-        this.nOfReceipts = nOfReceipts;
+    }
+    public long getFormattedTime(){
+        LocalDateTime dateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        String formattedDateTime = dateTime.format(formatter);
+        long valueOfFormatter = Long.parseLong(formattedDateTime);
+
+        return valueOfFormatter;
     }
 }

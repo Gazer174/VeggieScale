@@ -192,10 +192,10 @@ public class Main {
         charSearchProduct(listOfProducts, searchQuest);
 
         for (int i = 0; i < listOfProducts.size(); i++) {
+            String foundPro = listOfProducts.get(i).getName();
+            String category = listOfProducts.get(i).getCategory();
             String kampanj = "kampanj";
-            if (searchQuest.equals(listOfProducts.get(i).getName())) {
-                String foundPro = listOfProducts.get(i).getName();
-                String cat = listOfProducts.get(i).getCategory();
+            if (searchQuest.equals(foundPro)) {
                 System.out.print("Skriv nytt kampanjpris: ");
                 double newPrice = input.nextDouble();
                 input.nextLine();
@@ -234,7 +234,8 @@ public class Main {
         Product found = null;
         String searchQuest = null;
         showAllKampanj();
-        int recieptNr = 0;
+        ShoppingCart shoppingCart1 = null;
+        double sum = 0;
 
         do {
             System.out.println("1. Handla Frukt\n2. Handla Grönt\n0. Avsluta och skriv ut kvitto");
@@ -245,7 +246,10 @@ public class Main {
                 if (shoppingCart == null) {
                     System.out.println("inga produkter i varukorgen");
                 } else {
-                    createNewFile(recieptNr++, shoppingCart);
+                    for (Product product : shoppingCart) {
+                        sum += product.getPrice();
+                    }
+                    Receipt receipt = new Receipt(shoppingCart1);
                 }
                 break;
 
@@ -288,9 +292,6 @@ public class Main {
                             break;
                         }
 
-                    } else {
-                        System.out.println("Varan finns inte");
-                        break;
                     }
 
                 }
@@ -299,14 +300,14 @@ public class Main {
 
             for (Product p : shoppingCart) {
 
-                double sum = 0;
+                sum = 0;
                 for (int i = 0; i < shoppingCart.size(); i++) {
-                    sum += shoppingCart.get(i).getPrice();
+                   shoppingCart.get(i).getName();
+                   sum += shoppingCart.get(i).getPrice();
                 }
-
-                System.out.println("\u001B[32mKundvagn\u001B[0m");
-                System.out.println("\u001B[32m" + shoppingCart + "\u001B[0m");
-                System.out.println("\u001B[32mTotal summa: " + sum + "kr\nAntal varor: " + shoppingCart.size() + "\u001B[0m");
+                shoppingCart1 = new ShoppingCart(sum, shoppingCart.size(),shoppingCart );
+                System.out.println("Kundvagn");
+                System.out.println(shoppingCart1);
                 break;
             }
 
@@ -328,22 +329,6 @@ public class Main {
         } while (!correctInput);
 
         return check;
-    }
-
-    public static void createNewFile(int recieptNr, ArrayList<Product> shoppingReciept) {
-        try {
-            //skapar kvitto-fil
-            File testFile = new File(recieptNr + ".txt");
-            testFile.createNewFile();
-            System.out.println("Kvitto är utskrivet");
-
-            //skriver i bokfil
-            FileWriter fileWriter = new FileWriter(recieptNr + ".txt");
-            fileWriter.write(String.valueOf(shoppingReciept));
-            fileWriter.close();
-        } catch (IOException e) {
-            System.out.println("kunde inte skriva ut kvitto");
-        }
     }
 
     public static String checkIfBlankOrExit() {
