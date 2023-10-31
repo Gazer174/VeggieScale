@@ -1,21 +1,20 @@
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.Scanner;
 import java.io.Console;
 
 public class Main {
     public static ArrayList<Product> listOfProducts = new ArrayList<Product>();
-    public static ArrayList<Product> shoppingCart = new ArrayList<Product>();
+    public static ArrayList<Product> shoppingItems = new ArrayList<Product>();
     public static ArrayList<Product> kampanjer = new ArrayList<Product>();
     static Scanner input = new Scanner(System.in);
 
     public static void main(String[] args) {
-        listOfProducts.add(new Product("morot", 10, "GRÖNT"));
-        listOfProducts.add(new Product("röd äpple", 15, "FRUKT"));
-        listOfProducts.add(new Product("apelsin", 20, "FRUKT"));
-        listOfProducts.add(new Product("Tomat", 20, "GRÖNT"));
-        listOfProducts.add(new Product("äpple", 20, "GRÖNT"));
+        listOfProducts.add(new Product("morot", 10,"kg", "GRÖNT"));
+        listOfProducts.add(new Product("röd äpple", 15,"kg", "FRUKT"));
+        listOfProducts.add(new Product("apelsin", 20,"kg", "FRUKT"));
+        listOfProducts.add(new Product("Tomat", 20,"kg", "GRÖNT"));
+        listOfProducts.add(new Product("Citron", 20,"st", "GRÖNT"));
 
 
         boolean exitMenu = false;
@@ -170,13 +169,15 @@ public class Main {
                     input.next();
                 }
             }
+            System.out.print("ange enhet (kg-/st-pris");
+            String unit = checkIfBlankOrExit();
             System.out.print("Ange produkt kategori (Frukt eller Grönt?): ");
             String categoryInput = checkIfBlankOrExit();
             if (categoryInput.equals("0")) {
                 break;
             }
 
-            Product a = new Product(nameInput, priceInput, categoryInput);
+            Product a = new Product(nameInput, priceInput, unit, categoryInput);
             listOfProducts.add(a);
             System.out.println("Du har lagt till: " + a);
             exitAddProduct = true;
@@ -186,30 +187,39 @@ public class Main {
 
     public static void addkampanj() {
         printAllCategories();
-        System.out.println("Sök en produkt för att skapa kampanj");
+        printAllProducts();
+        System.out.println("Skriv namnet på den du vill skapa");
 
         String searchQuest = input.nextLine();
-        charSearchProduct(listOfProducts, searchQuest);
+        //charSearchProduct(listOfProducts, searchQuest);
 
         for (int i = 0; i < listOfProducts.size(); i++) {
             String foundPro = listOfProducts.get(i).getName();
-            String category = listOfProducts.get(i).getCategory();
-            String kampanj = "kampanj";
-            if (searchQuest.equals(foundPro)) {
+            double foundProPrice = listOfProducts.get(i).getPrice();
+            if (searchQuest.equalsIgnoreCase(foundPro)) {
                 System.out.print("Skriv nytt kampanjpris: ");
-                double newPrice = input.nextDouble();
+                double offerPrice = input.nextDouble();
                 input.nextLine();
-                String oldPrice = "Normalpris: " + listOfProducts.get(i).toString();
-                listOfProducts.get(i).setPrice(newPrice);
+                System.out.println("Skriv text: ");
+                String offerText = input.nextLine();
+                //String oldPrice = "Normalpris: " + listOfProducts.get(i).toString();
+                listOfProducts.get(i).setPrice(offerPrice);
                 //System.out.println("Kampanjpris " + listOfProducts.get(i) + oldPrice);
-                Product product = new Product(foundPro, newPrice);
-                kampanjer.add(product);
-                for (Product product1 : kampanjer) {
+                //Product product = new Product(foundPro, newPrice);
+                Offer a = new Offer(foundPro, offerPrice, foundProPrice, offerText);
+                //kampanjer.add(product);
+                /*for (Product product1 : kampanjer) {
                     System.out.println("Kampanjer.txt");
                     System.out.println(product1 + " " + oldPrice);
                 }
+
+                 */
             }
         }
+    }
+    public static void newProductAndOffer(Product productName){
+
+        //Offer productToOffer = new Offer()
     }
 
     public static void newAdmin() throws IOException {
@@ -243,10 +253,11 @@ public class Main {
             String choice = checkIfBlankOrExit();
 
             if (choice.equals("0")) {
-                if (shoppingCart == null) {
-                    System.out.println("inga produkter i varukorgen");
+                if (shoppingItems.isEmpty()) {
+                    System.out.println("inga produkter i varukorgen\nÅtergår till startsida..\n");
+                    break;
                 } else {
-                    for (Product product : shoppingCart) {
+                    for (Product product : shoppingItems) {
                         sum += product.getPrice();
                     }
                     Receipt receipt = new Receipt(shoppingCart1);
@@ -275,17 +286,17 @@ public class Main {
 
 
                         System.out.print("\u001B[32mhur många enheter(kilo eller styck?): \u001B[0m");
-                        double units = checkDouble();
+                        double totalUnits = checkDouble();
 
 
-                        double totalPrice = calculatePrice(chosenProduct.getPrice(), units);
+                        double totalPrice = calculatePrice(chosenProduct.getPrice(), totalUnits);
 
                         System.out.println("\u001B[3mVill du lägga till " + chosenProduct.getName() + " för " + totalPrice + "kr?\n1. Ja\n2. Nej, gå tillbaka\nDitt val: \u001B[0m");
                         answer = checkIfBlankOrExit();
 
                         if (answer.equals("1")) {
                             Product p1 = new Product(chosenProduct, totalPrice);
-                            shoppingCart.add(p1);
+                            shoppingItems.add(p1);
 
                         }
                         if (answer.equals("2")) {
@@ -298,18 +309,21 @@ public class Main {
             }
 
 
-            for (Product p : shoppingCart) {
+
 
                 sum = 0;
-                for (int i = 0; i < shoppingCart.size(); i++) {
-                   shoppingCart.get(i).getName();
-                   sum += shoppingCart.get(i).getPrice();
+                for (int i = 0; i < shoppingItems.size(); i++) {
+                    shoppingItems.get(i).getName();
+                    sum += shoppingItems.get(i).getPrice();
                 }
-                shoppingCart1 = new ShoppingCart(sum, shoppingCart.size(),shoppingCart );
+                shoppingCart1 = new ShoppingCart(sum, shoppingItems.size(), shoppingItems);
                 System.out.println("Kundvagn");
-                System.out.println(shoppingCart1);
-                break;
-            }
+                for (Product p : shoppingItems){
+                    System.out.println(p.toString());
+                }
+
+
+
 
         } while (!exitShop);
 
@@ -337,7 +351,7 @@ public class Main {
         while (!checkInput) {
             productName = input.nextLine();
             if (productName.isBlank()) {
-                System.out.println("Ange ett namn: ");
+                System.out.println("Ange ett värde: ");
             } else {
                 checkInput = true;
             }
@@ -431,6 +445,11 @@ public class Main {
         }
         for (String product : allUniqueCategories) {
             System.out.println(product);
+        }
+    }
+    public static void printAllProducts(){
+        for (Product p : listOfProducts){
+            System.out.println(p);
         }
     }
 

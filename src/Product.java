@@ -5,21 +5,23 @@ public class Product {
     private double price;
     private String kampanj;
     private String category;
+    private String unit;
    
 
-    public Product(String kampanj, String name, double price){
-        this.kampanj = kampanj;
+    public Product(String name, double price, String unit){
         this.name = name;
         this.price = price;
+        this.unit = unit;
     }
     public Product(String name, double price){
         this.name = name;
         this.price = price;
     }
-    public Product (String name, double price, String category){
+    public Product (String name, double price, String unit, String category){
         this.name = name;
         this.price = price;
         this.category = category;
+        this.unit = unit;
     }
 
     public Product(Product product, double price) {
@@ -27,8 +29,13 @@ public class Product {
         this.price = price;
     }
 
+    public String getUnit() {
+        return unit;
+    }
 
-
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
 
     public String getName() {
         return this.name;
@@ -58,14 +65,15 @@ public class Product {
     public String toString(){
 
         if (category != null && price !=0){
-            return this.name + " " + this.price + "kr/kg i kategorin "+ this.category;
+            return this.name + " " + this.price + " kr " + this.unit + " i kategorin " + this.category;
         }
         if (category != null){
             return this.name + " i kategorin " + this.category + " *inget pris inlagt*";
         }
         if (price != 0 ){
-            return this.name + " " + this.price + "kr/kg";
-        } else {
+            return this.name + " " + this.price + " kr ";
+        }
+        else {
             return this.name;
         }
 
