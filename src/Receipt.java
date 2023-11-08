@@ -24,7 +24,7 @@ public class Receipt {
 
     public void createNewReceipt() {
         File receiptFile;
-        File receiptDir = new File("receiptdir");
+        File receiptDir = new File("Receipts");
 
         if(!receiptDir.exists()){
             boolean created = receiptDir.mkdirs();

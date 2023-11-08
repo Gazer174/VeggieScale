@@ -3,9 +3,9 @@ import java.util.Arrays;
 public class Product {
     private String name;
     private double price;
-    private String kampanj;
     private String category;
     private String unit;
+    private double totalOfProducts;
    
 
     public Product(String name, double price, String unit){
@@ -24,9 +24,19 @@ public class Product {
         this.unit = unit;
     }
 
-    public Product(Product product, double price) {
+    public Product(Product product, double price, double totalOfProducts, String unit) {
         this.name = product.getName();
         this.price = price;
+        this.totalOfProducts = totalOfProducts;
+        this.unit = unit;
+    }
+
+    public double getTotalOfProducts() {
+        return totalOfProducts;
+    }
+
+    public void setTotalOfProducts(double totalOfProducts) {
+        this.totalOfProducts = totalOfProducts;
     }
 
     public String getUnit() {
@@ -61,22 +71,39 @@ public class Product {
         this.category = category;
     }
 
+
+
+   /*
+    @Override
+    public String toString() {
+        return "Product{" +
+                "name='" + name + '\'' +
+                ", price=" + price +
+                ", category='" + category + '\'' +
+                ", unit='" + unit + '\'' +
+                ", totalOfProducts=" + totalOfProducts +
+                '}';
+    }
+
+    */
     @Override
     public String toString(){
 
         if (category != null && price !=0){
-            return this.name + " " + this.price + " kr " + this.unit + " i kategorin " + this.category;
+            return this.name + " " + this.price + "kr per " + this.unit;// + " i kategorin " + this.category;
         }
         if (category != null){
             return this.name + " i kategorin " + this.category + " *inget pris inlagt*";
         }
         if (price != 0 ){
-            return this.name + " " + this.price + " kr ";
+            return this.name + " " + this.price + " kr " + this.totalOfProducts + this.unit;
         }
         else {
             return this.name;
         }
 
     }
+
+
 
 }
