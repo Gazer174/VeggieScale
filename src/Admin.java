@@ -1,4 +1,6 @@
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class Admin {
@@ -12,10 +14,18 @@ public class Admin {
         createAdmin(this.username,this.password);
     }
     public static boolean getUserInfo(String username, String password) throws FileNotFoundException {
-        String path = "C:\\Users\\ITHS\\IdeaProjects\\VeggieScale\\Login.txt";
-        File file = new File(path);
+        Path currentWorkingdir = Paths.get("").toAbsolutePath();
+        File file;
+        String path = currentWorkingdir /*+ File.separator + "src"*/ + File.separator + "Login.txt";
+
+        file = new File(path);
+        if (!file.exists()){
+            String path2 = currentWorkingdir + File.separator + "src" + File.separator + "Login.txt";
+            file = new File(path2);
+        }
         Scanner sc = new Scanner(file);
         BufferedReader bufferedReader;
+
 
         try{
             bufferedReader = new BufferedReader(new FileReader(file));
@@ -66,8 +76,18 @@ public class Admin {
 
 
     public void createAdmin(String username, String password)throws IOException {
-        String path = "C:\\Users\\ITHS\\IdeaProjects\\VeggieScale\\Login.txt";
+        Path currentWorkingdir = Paths.get("").toAbsolutePath();
+        File file;
+        String path = currentWorkingdir + File.separator + "Login.txt";
+
+        file = new File(path);
+        if (!file.exists()){
+            path = currentWorkingdir + File.separator + "src" + File.separator + "Login.txt";
+        }
+
         PrintWriter p = new PrintWriter(new FileWriter(path,true));
+
+
         p.println("\nAnvändarnamn: " + this.username + " Lösenord: " + this.password);
         p.println();
         p.close();
