@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.Scanner;
 
-public class Offer {
+public class Offer implements  Serializable{
 
     private Product name;
     private double offerPrice;
@@ -16,7 +16,7 @@ public class Offer {
         this.regularPrice = regularPrice;
         this.offerLimit = offerLimit;
         this.maxOrMini = maxOrMini;
-        createNewOffer();
+        //createNewOffer();
 
     }
     /*
@@ -39,7 +39,7 @@ public class Offer {
     public void setMaxOrMini(String maxOrMini) {
         this.maxOrMini = maxOrMini;
     }
-
+/*
     public void createNewOffer() {
         File offerFile;
         File offerDir = new File("OfferDir");
@@ -149,6 +149,7 @@ public class Offer {
 
     @Override
     public String toString() {
+
         return "Kampanj!!! " + name + " " + text + " Ordinarie Pris " + regularPrice + "kr/" + name.getUnit();
 
     }

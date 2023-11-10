@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class Product {
+public class  Product  implements Serializable {
     private String name;
     private double price;
     private String category;

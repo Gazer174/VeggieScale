@@ -1,4 +1,8 @@
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.SQLOutput;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -10,10 +14,14 @@ public class Main {
     public static ArrayList<Offer> offerList = new ArrayList<Offer>();
     public static ArrayList<String> tmpList = new ArrayList<>();
 
+
     static Scanner input = new Scanner(System.in);
 
     public static void main(String[] args) throws FileNotFoundException {
-        addProductsForTesting();
+        //addProductsForTesting();
+        readProductListToFile();
+        readOfferListToFile();
+
         //offerFromFile();
         boolean exitMenu = false;
         do {
@@ -59,30 +67,36 @@ public class Main {
         }
 
     }
-    /*
-    public static void offerFromFile (){
-        Offer a = new Offer();
-    }
-
-     */
 
     public static boolean intelliJLogin() throws IOException {
+        int maxTry = 3;
 
         boolean found = false;
-        do {
-            System.out.println("Skriv användarnamn: ");
-            String username = checkIfBlankOrExit();
-            System.out.println("Skriv lösenord: ");
-            String password = checkIfBlankOrExit();
 
-            found = Admin.getUserInfo(username, password);
-            if (found) {
-                adminSite();
-            } else {
-                System.out.println("Felaktig inmatning, kontrollera användaruppgifter!");
-            }
+            do {
+                System.out.println("Du har " + maxTry + " försök!");
+                System.out.println("Skriv användarnamn: ");
+                String username = checkIfBlankOrExit();
+                System.out.println("Skriv lösenord: ");
+                String password = checkIfBlankOrExit();
+                maxTry--;
 
-        } while (!found);
+                found = Admin.getUserInfo(username, password);
+                if (found) {
+                    adminSite();
+                } else {
+                    System.out.println("Felaktig inmatning, kontrollera användaruppgifter!");
+
+                    if (maxTry==0){
+                        System.out.println("för många försök börja om\n");
+                        break;
+                    }
+                }
+
+
+            } while (!found);
+
+
         return found;
     }
 
@@ -120,9 +134,10 @@ public class Main {
             System.out.println("0. Logga ut");
             System.out.println("1. Lägg till produkt");
             System.out.println("2. Lägg till kampanj");
-            System.out.println("3. Redigera/Sök produkt");
-            System.out.println("4. Väga produkt");
-            System.out.println("5. Skapa ny administratör");
+            System.out.println("3. redigera kampanj");
+            System.out.println("4. Redigera/Sök Ordinarie produkt");
+            System.out.println("5. Väga produkt");
+            System.out.println("6. Skapa ny administratör");
             System.out.println("Skriv Menysiffra");
             System.out.print("Ditt val: ");
             boolean choice = false;
@@ -135,9 +150,10 @@ public class Main {
                         case 0 -> exitProgram = true;
                         case 1 -> addProduct();
                         case 2 -> addkampanj();
-                        case 3 -> editProduct();
-                        case 4 -> weighProduct();
-                        case 5 -> newAdmin();
+                        case 3 -> editKampanj();
+                        case 4 -> editProduct();
+                        case 5 -> weighProduct();
+                        case 6 -> newAdmin();
                     }
                 } catch (Exception e) {
                     System.out.print("Felaktig inmatning, försök igen\nSkriv menysiffra!: ");
@@ -173,23 +189,115 @@ public class Main {
                     input.next();
                 }
             }
-            System.out.print("Ange enhet (kg-/st-pris: ");
-            String unit = checkIfBlankOrExit();
-            System.out.print("Ange produkt kategori (Frukt eller Grönt?): ");
-            String categoryInput = checkIfBlankOrExit();
-            if (categoryInput.equals("0")) {
-                break;
+            System.out.print("Gör ett val:\n1. kg-pris\n2. st-pris");
+            System.out.print("\nDitt val: ");
+            String chosenUnit = checkIfBlankOrExit();
+            String unit = null;
+            if (chosenUnit.equals("1")){
+                unit = "kg";
+            } else if (chosenUnit.equals("2")) {
+                unit = "st";
+            } else {
+                System.out.println("ogiltigt val börja om");
+                addProduct();
+            }
+            System.out.println("Välj kategori");
+            System.out.print("Gör ett val:\n1. Frukt\n2. Grönt ");
+            System.out.print("\nDitt val: ");
+            String categoryInput = null;
+            String chosenCategory = checkIfBlankOrExit();
+            if (chosenCategory.equals("1")){
+                categoryInput = "Frukt";
+            } else if (chosenCategory.equals("2")) {
+                categoryInput = "Grönt";
+            } else {
+                System.out.println("ogiltigt val börja om");
+                addProduct();
             }
 
             Product a = new Product(nameInput, priceInput, unit, categoryInput);
             listOfProducts.add(a);
+            saveProductListToFile();
             System.out.println("Du har lagt till: " + a);
             exitAddProduct = true;
 
         } while (!exitAddProduct);
     }
+    private static void saveOfferListToFile(){
+        try {
+            Path path = Paths.get("OfferList.txt");
+            if(!Files.exists(path)){
+                Files.createFile(path);
+            }
+            FileOutputStream fileOutputStream = new FileOutputStream("OfferList.txt");
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(offerList);
+            objectOutputStream.flush();
+            objectOutputStream.close();
+        }catch (FileNotFoundException exp){
+            System.err.println("File for saving products wasn't found");
+        }catch (IOException exp){
+            System.err.println("A error  has acured while writing to file");
+        }
+    }
+    private static void readOfferListToFile(){
+        try {
+            Path path = Paths.get("OfferList.txt");
+            if(!Files.exists(path)){
+                System.err.println("there is no file with offers yet");
+                Files.createFile(path);
+                return;
+            }
+            FileInputStream fileInputStream = new FileInputStream("OfferList.txt");
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            offerList = (ArrayList<Offer>) objectInputStream.readObject();
+            objectInputStream.close();
+        }catch (FileNotFoundException exp){
+            System.err.println("File for saving products wasn't found");
+        }catch (IOException exp){
+            System.err.println("A error  has acured while reading from file");
+        }catch (ClassNotFoundException exp){
+            System.err.println(exp.getMessage());
+        }
+    }
 
-
+    private static void saveProductListToFile(){
+        try {
+            Path path =  Paths.get("ListOfProducts.txt");
+            if(!Files.exists(path)){
+                Files.createFile(path);
+            }
+            FileOutputStream fileOutputStream = new FileOutputStream("ListOfProducts.txt");
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(listOfProducts);
+            objectOutputStream.flush();
+            objectOutputStream.close();
+        }catch (FileNotFoundException exp){
+            System.err.println("File for saving products wasn't found");
+        }catch (IOException exp){
+            System.err.println("A error  has acured while writing to file");
+        }
+    }
+    private static void readProductListToFile(){
+        try {
+            Path path =  Paths.get("ListOfProducts.txt");
+            if(!Files.exists(path)){
+                System.err.println("there is no file with products yet");
+                Files.createFile(path);
+                return;
+            }
+            FileInputStream fileInputStream = new FileInputStream("ListOfProducts.txt");
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            listOfProducts = (ArrayList<Product>) objectInputStream.readObject();
+            objectInputStream.close();
+        }catch (FileNotFoundException exp){
+            System.err.println("File for saving products wasn't found");
+        }catch (IOException exp){
+            System.err.println("A error  has acured while writing to file");
+        }catch (ClassNotFoundException exp){
+            System.err.println(exp.getMessage());
+        }
+    }
     public static void addkampanj() {
         System.out.println("\nNuvarande produkter");
         printAllProducts();
@@ -202,7 +310,7 @@ public class Main {
         String foundProName = null;
 
         System.out.print("\nSkriv namnet på den du vill skapa kampanj för,\n" +
-                "om den inte finns lägg till den som produkt först!\nDin Sökning: ");
+                "om den inte finns lägg till den som produkt först!\n\nDin Sökning: ");
 
         String searchQuest = checkIfBlankOrExit();
 
@@ -216,7 +324,7 @@ public class Main {
 
             if (searchQuest.equalsIgnoreCase(foundProName)) {
 
-                System.out.print("Ange ett gränsvärde för kampanjen(endast siffror): ");
+                System.out.print("Ange en (MAX/MINST) gräns i siffror  för kampanjen (endast siffror): ");
                 offerLimit = checkDouble();
 
                 System.out.println("Ska det vara\n1.Max "+ offerLimit +"\n2.Minst "+ offerLimit);
@@ -230,12 +338,13 @@ public class Main {
                 System.out.println("Skriv fritext (ex max 2kg/kund eller vid köp av minst 2st): ");
                 offerText = checkIfBlankOrExit();
 
-                System.out.print("Skriv nytt kampanjpris (endast siffror!): ");
+                System.out.print("Skriv nytt kampanjpris (endast siffror och punkt!): ");
                 offerPrice = checkDouble();
                 foundPro.setPrice(offerPrice);
 
                 Offer a = new Offer(foundPro, offerPrice, foundProPrice, offerText,offerLimit, maxOrMini);
                 offerList.add(a);
+                saveOfferListToFile();
 
                 showAllKampanj();
 
@@ -277,7 +386,7 @@ public class Main {
 
         do {
             System.out.println(ConsoleColor.BLUE);
-            System.out.println("1. Handla Frukt\n2. Handla Grönt\n0. Avsluta och skriv ut kvitto");
+            System.out.println("1. Handla Frukt\n2. Handla Grönt\n3. Fri sökning\n0. Avsluta och skriv ut kvitto");
             System.out.print("Välj din siffra: ");
             //String choice = checkIfBlankOrExit();
             int choice = checkInt();
@@ -295,13 +404,17 @@ public class Main {
                         shoppingItems.remove(p);
                         break;
                     }
-
+                    break;
                 }
-                break;
+
             }
             switch(choice){
                 case 1 -> searchQuest = "FRUKT";
                 case 2 -> searchQuest = "GRÖNT";
+                case 3 -> {
+                    System.out.println("Ange fritext");
+                    searchQuest = checkIfBlankOrExit();
+                }
 
             }
 
@@ -322,6 +435,7 @@ public class Main {
                         System.out.print("hur många "+ chosenProduct.getUnit() +"(endast siffror använd PUNKT INTE KOMMATECKEN): " );
                         if (chosenProduct.getUnit().equalsIgnoreCase("st")){
                             totalUnits = (int)totalUnits;
+                            totalUnits = checkInt();
                         } else {
                             totalUnits = checkDouble();
                         }
@@ -357,7 +471,7 @@ public class Main {
                             totalPrice = calculatePrice(chosenProduct.getPrice(), totalUnits);
                             break;
                         }
-                        System.out.printf("Vill du lägga till %s för %.2fkr?", chosenProduct.getName(), totalPrice);
+                        System.out.printf("Vill du lägga till %.2f %s %s för %.2fkr?",totalUnits, chosenProduct.getUnit() , chosenProduct.getName(), totalPrice);
                         System.out.print("\n1. Ja\n2. Nej, gå tillbaka\n\u001B[34mDitt val: \u001B[0m");
                         answer = checkIfBlankOrExit();
 
@@ -375,18 +489,18 @@ public class Main {
 
                 }
             }
-                sum = 0;
-                for (int i = 0; i < shoppingItems.size(); i++) {
+                    sum = 0;
+                    for (int i = 0; i < shoppingItems.size(); i++) {
 
-                    sum += shoppingItems.get(i).getPrice();
-                    //for
-                }
-                shoppingCart1 = new ShoppingCart(sum, shoppingItems.size(), shoppingItems);
-                if (shoppingItems.isEmpty()){
-                    System.out.println("Kundvagnen är tom");
-                } else {
-                    System.out.println("Kundvagn\n" + shoppingItems);
-                }
+                        sum += shoppingItems.get(i).getPrice();
+                        //for
+                    }
+                    shoppingCart1 = new ShoppingCart(sum, shoppingItems.size(), shoppingItems);
+                    if (shoppingItems.isEmpty()){
+                        System.out.println("Kundvagnen är tom");
+                    } else {
+                        System.out.println("Kundvagn\n" + shoppingItems);
+                    }
 
 
 
@@ -520,6 +634,18 @@ public class Main {
             }
         }return p;
     }
+    public static Offer charSearchOffer(ArrayList<Offer> offerList, String searchQuest){
+
+
+            Offer o = null;
+
+            System.out.println("Hittade följande: ");
+            for (Offer offer : offerList) {
+                if (offer.getName().getName().toLowerCase().contains(searchQuest.toLowerCase())) {
+                    o = offer;
+                }
+            }return o;
+    }
     public static void printAllCategories() {
         ArrayList<String> allUniqueCategories = new ArrayList<>();
         System.out.println("NUVARANDE KATEGORIER ");
@@ -547,7 +673,49 @@ public class Main {
     public static double calculatePrice(double price, double inputKilo) {
         return price * inputKilo;
     }
-    public static void editProduct() {
+    public static void editKampanj(){
+        double newOfferPrice = 0;
+        String whatToChange = null;
+        String offerToChange;
+        Offer found;
+        String chosenOffer;
+        showAllKampanj();
+        System.out.println("Sök på kampanj du vill ändra: ");
+        chosenOffer = checkIfBlankOrExit();
+        found = charSearchOffer(offerList,chosenOffer);
+        System.out.println(found);
+        if (found!=null){
+            System.out.println("BEKRÄFTA PRODUKT ATT ÄNDRA");
+            offerToChange = checkIfBlankOrExit();
+            for (int i = 0; i < offerList.size(); i++) {
+                if (offerToChange.equals(offerList.get(i).getName().getName())){
+                    System.out.println("Alternativ för " + offerList.get(i).getName());
+                    System.out.println("1. Ändra pris");
+                    System.out.println("2. Ta bort kampanj");
+
+                }
+
+                whatToChange = checkIfBlankOrExit();
+                switch (whatToChange){
+                    case "1" -> {
+                        System.out.println("Skriv nytt kampanjpris");
+                        newOfferPrice = checkDouble();
+                        offerList.get(i).getName().setPrice(newOfferPrice);
+                        saveOfferListToFile();
+                        System.out.println("UPPDATERAD KAMPANJ" + offerList.get(i));
+                    }
+                    case "2" -> {
+                        System.out.println("Du har nu tagit bort " + offerList.get(i).getName());
+                        offerList.remove(i);
+                        saveOfferListToFile();
+
+                    }
+                }
+            }
+        }
+
+    }
+    public static void editProduct() throws IOException {
         boolean exitEdit = false;
         Product found;
         String userConfirm;
@@ -559,10 +727,11 @@ public class Main {
 
             System.out.println("Sök på KATEGORI eller PRODUKTNAMN: ");
             String userSearch = checkIfBlankOrExit();
-            found = charSearchProduct(listOfProducts, userSearch);
             if (userSearch.equals("0")) {
-                break;
+                adminSite();
             }
+            found = charSearchProduct(listOfProducts, userSearch);
+
 
 
             if (found != null) {
@@ -577,6 +746,9 @@ public class Main {
                         if (userConfirm.equalsIgnoreCase(listOfProducts.get(i).getName())) {
                             System.out.println("Alternativ för: " + listOfProducts.get(i));
                             foundIt = true;
+                        }  else {
+                            System.out.println("Hittade inget");
+                            editProduct();
                         }
 
 
@@ -624,6 +796,7 @@ public class Main {
                 }
                 listOfProduct.setPrice(newPrice);
                 System.out.println("Priset för " + chosenProduct + " har ändrats till " + newPrice + "kr");
+                saveProductListToFile();
             }
         }
     }
