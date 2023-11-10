@@ -1,0 +1,4 @@
+2023-11-10 14:32
+[banan 100.0 kr 10.0kg]
+Antal varor: 1
+Totala kostnad: 100.0kr

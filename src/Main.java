@@ -2,27 +2,22 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.SQLOutput;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.Console;
 
 public class Main {
-    public static ArrayList<Product> listOfProducts = new ArrayList<Product>();
-    public static ArrayList<Product> shoppingItems = new ArrayList<Product>();
-    public static ArrayList<Offer> offerList = new ArrayList<Offer>();
-    public static ArrayList<String> tmpList = new ArrayList<>();
+    public static ArrayList<Product> listOfProducts = new ArrayList<>();
+    public static ArrayList<Product> shoppingItems = new ArrayList<>();
+    public static ArrayList<Offer> offerList = new ArrayList<>();
 
 
     static Scanner input = new Scanner(System.in);
 
-    public static void main(String[] args) throws FileNotFoundException {
-        //addProductsForTesting();
+    public static void main(String[] args) {
         readProductListToFile();
         readOfferListToFile();
 
-        //offerFromFile();
         boolean exitMenu = false;
         do {
             System.out.println("Välkommen till Matbutiken");
@@ -68,10 +63,10 @@ public class Main {
 
     }
 
-    public static boolean intelliJLogin() throws IOException {
+    public static void intelliJLogin() throws IOException {
         int maxTry = 3;
 
-        boolean found = false;
+        boolean found;
 
             do {
                 System.out.println("Du har " + maxTry + " försök!");
@@ -97,7 +92,6 @@ public class Main {
             } while (!found);
 
 
-        return found;
     }
 
     public static void cmdLogin() throws IOException {
@@ -107,7 +101,7 @@ public class Main {
             return;
 
         }
-        boolean found = false;
+        boolean found;
 
         do {
             console.printf("Skriv användarnamn: ");
@@ -124,7 +118,7 @@ public class Main {
         } while (!found);
 
     }
-    public static void adminSite() throws IOException {
+    public static void adminSite() {
 
         boolean exitProgram = false;
         do {
@@ -166,7 +160,7 @@ public class Main {
 
     }
     public static void addProduct() {
-        boolean exitAddProduct = false;
+        boolean exitAddProduct;
         do {
             System.out.println("-- Lägger till produkt --\n(Skriv 0 närsomhelst för huvudmeny)");
             double priceInput = 0;
@@ -301,13 +295,13 @@ public class Main {
     public static void addkampanj() {
         System.out.println("\nNuvarande produkter");
         printAllProducts();
-        double offerLimit = 0;
+        double offerLimit;
         String maxOrMini = null;
-        Product foundPro = null;
-        double foundProPrice = 0;
-        double offerPrice = 0;
-        String offerText = null;
-        String foundProName = null;
+        Product foundPro;
+        double foundProPrice;
+        double offerPrice;
+        String offerText;
+        String foundProName;
 
         System.out.print("\nSkriv namnet på den du vill skapa kampanj för,\n" +
                 "om den inte finns lägg till den som produkt först!\n\nDin Sökning: ");
@@ -345,6 +339,7 @@ public class Main {
                 Offer a = new Offer(foundPro, offerPrice, foundProPrice, offerText,offerLimit, maxOrMini);
                 offerList.add(a);
                 saveOfferListToFile();
+                saveProductListToFile();
 
                 showAllKampanj();
 
@@ -368,13 +363,14 @@ public class Main {
         for (Offer p : offerList) {
             System.out.println("\u001B[32m" + p + "\u001B[0m");
         }
+        System.out.println("kampanjpriser läggs till i kundkorg");
     }
-    public static void costumerSite() throws FileNotFoundException {
+    public static void costumerSite() {
         System.out.println(ConsoleColor.BLUE);
         boolean exitShop = false;
         System.out.println("Välkommen till matbutiken Kära Kund");
         System.out.println("Välj ett av nedanstående alternativ");
-        Product found = null;
+        Product found;
         String searchQuest = null;
         showAllKampanj();
         ShoppingCart shoppingCart1 = null;
@@ -390,7 +386,7 @@ public class Main {
             System.out.print("Välj din siffra: ");
             //String choice = checkIfBlankOrExit();
             int choice = checkInt();
-            System.out.println("");
+            System.out.println(" ");
             if (choice==0) {
                 if (shoppingItems.isEmpty()) {
                     System.out.println("inga produkter i varukorgen\nÅtergår till startsida..\n");
@@ -434,13 +430,12 @@ public class Main {
 
                         System.out.print("hur många "+ chosenProduct.getUnit() +"(endast siffror använd PUNKT INTE KOMMATECKEN): " );
                         if (chosenProduct.getUnit().equalsIgnoreCase("st")){
-                            totalUnits = (int)totalUnits;
                             totalUnits = checkInt();
                         } else {
                             totalUnits = checkDouble();
                         }
                         for (Offer offerProduct : offerList){
-                            if (chosenProduct.equals(offerProduct.getName())){
+                            if (chosenProduct.getName().equals(offerProduct.getName().getName())){
                                 limit = checkLimit(totalUnits,offerProduct.getOfferLimit(),offerProduct.getMaxOrMini());
                                 if (!limit){
                                     if (offerProduct.getMaxOrMini().equals("max")){
@@ -459,6 +454,7 @@ public class Main {
                                         String offerChoice = input.nextLine();
                                         if (offerChoice.equals("1")){
                                             totalPrice = calculatePrice(offerProduct.getOfferLimit(), offerProduct.getOfferPrice());
+                                            totalUnits = offerProduct.getOfferLimit();
                                         }
                                         if (offerChoice.equals("2")){
                                             totalPrice = calculatePrice(offerProduct.getRegularPrice(), totalUnits);
@@ -499,7 +495,7 @@ public class Main {
                     if (shoppingItems.isEmpty()){
                         System.out.println("Kundvagnen är tom");
                     } else {
-                        System.out.println("Kundvagn\n" + shoppingItems);
+                        System.out.println("Kundvagn\n" + shoppingCart1);
                     }
 
 
@@ -676,9 +672,9 @@ public class Main {
     public static void editKampanj(){
         double newOfferPrice = 0;
         String whatToChange = null;
-        String offerToChange;
-        Offer found;
-        String chosenOffer;
+        String offerToChange = null;
+        Offer found = null;
+        String chosenOffer = null;
         showAllKampanj();
         System.out.println("Sök på kampanj du vill ändra: ");
         chosenOffer = checkIfBlankOrExit();
@@ -688,27 +684,29 @@ public class Main {
             System.out.println("BEKRÄFTA PRODUKT ATT ÄNDRA");
             offerToChange = checkIfBlankOrExit();
             for (int i = 0; i < offerList.size(); i++) {
-                if (offerToChange.equals(offerList.get(i).getName().getName())){
-                    System.out.println("Alternativ för " + offerList.get(i).getName());
-                    System.out.println("1. Ändra pris");
-                    System.out.println("2. Ta bort kampanj");
+                if (offerToChange.equalsIgnoreCase(offerList.get(i).getName().getName())){
 
-                }
 
+                System.out.println("Alternativ för " + offerList.get(i).getName());
+                System.out.println("1. Ändra pris");
+                System.out.println("2. Ta bort kampanj");
+                System.out.print("Ditt val: ");
                 whatToChange = checkIfBlankOrExit();
-                switch (whatToChange){
-                    case "1" -> {
-                        System.out.println("Skriv nytt kampanjpris");
-                        newOfferPrice = checkDouble();
-                        offerList.get(i).getName().setPrice(newOfferPrice);
-                        saveOfferListToFile();
-                        System.out.println("UPPDATERAD KAMPANJ" + offerList.get(i));
-                    }
-                    case "2" -> {
-                        System.out.println("Du har nu tagit bort " + offerList.get(i).getName());
-                        offerList.remove(i);
-                        saveOfferListToFile();
 
+                    switch (whatToChange){
+                        case "1" -> {
+                            System.out.println("Skriv nytt kampanjpris");
+                            newOfferPrice = checkDouble();
+                            offerList.get(i).getName().setPrice(newOfferPrice);
+                            saveOfferListToFile();
+                            System.out.println("UPPDATERAD KAMPANJ" + offerList.get(i));
+                        }
+                        case "2" -> {
+                            System.out.println("Du har nu tagit bort " + offerList.get(i).getName());
+                            offerList.remove(i);
+                            saveOfferListToFile();
+
+                        }
                     }
                 }
             }
@@ -809,6 +807,7 @@ public class Main {
                     break;
                 }
                 listOfProduct.setName(newName);
+                saveProductListToFile();
                 System.out.println("Namnet för " + chosenProduct + " har ändrats till " + newName);
             }
             break;
@@ -828,6 +827,7 @@ public class Main {
                         if (answerChoice == 1) {
                             listOfProducts.remove(i);
                             System.out.println("Du har nu raderat: " + chosenProduct);
+                            saveProductListToFile();
                             answer = true;
                         }
                         if (answerChoice == 2) {
@@ -843,36 +843,5 @@ public class Main {
             }
         }
     }
-    public static void addProductsForTesting(){
-        listOfProducts.add(new Product("Äpple", 23.90,"kg", "FRUKT"));
-        listOfProducts.add(new Product("Apelsin", 26.90,"kg", "FRUKT"));
-        listOfProducts.add(new Product("Banan", 25.90,"kg", "FRUKT"));
-        listOfProducts.add(new Product("Avocado", 19.90,"st", "FRUKT"));
-        listOfProducts.add(new Product("Citron", 10,"st", "GRÖNT"));
-        listOfProducts.add(new Product("Morot", 10,"kg", "GRÖNT"));
-        listOfProducts.add(new Product("Gurka", 15,"st", "GRÖNT"));
-        listOfProducts.add(new Product("Sallad", 15,"st", "GRÖNT"));
-        listOfProducts.add(new Product("Tomat", 29.90,"kg", "GRÖNT"));
 
-        for (int i = 0; i < listOfProducts.size(); i++) {
-            Product foundProduct = listOfProducts.get(i);
-            if ("Banan".equals(foundProduct.getName())){
-                foundProduct.setPrice(15);
-                offerList.add(new Offer(foundProduct, 15, 25, "max 5kg per kund",5,"max" ));
-            }
-            if ("Citron".equals(foundProduct.getName())){
-                foundProduct.setPrice(15);
-                offerList.add(new Offer(foundProduct, 5, 10, "vid köp av minst 2 st",2,"mini" ));
-            }
-            if ("Morot".equals(foundProduct.getName())){
-                foundProduct.setPrice(5);
-                offerList.add(new Offer(foundProduct, 5, 10, "vid köp av minst 2 kg",2,"mini" ));
-            }
-            if ("Apelsin".equals(foundProduct.getName())){
-                foundProduct.setPrice(15);
-                offerList.add(new Offer(foundProduct, 15, 26.90, "max 2kg per kund",2,"max" ));
-            }
-
-        }
-    }
 }

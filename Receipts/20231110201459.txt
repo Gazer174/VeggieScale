@@ -1,0 +1,4 @@
+2023-11-10 20:14
+[banan 90.0 kr 10.0kg, citron 120.0 kr 12.0st]
+Antal varor: 2
+Totala kostnad: 210.0kr
