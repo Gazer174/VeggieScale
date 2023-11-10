@@ -19,6 +19,16 @@ public class Offer {
         createNewOffer();
 
     }
+    /*
+    public Offer() {
+        try {
+            getOfferFromFile();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+     */
 
 
 
@@ -47,7 +57,7 @@ public class Offer {
         try {
             //skapar kvitto-fil
 
-            offerFile = new File(offerDir, this.name + ".txt");
+            offerFile = new File(offerDir, this.name.getName() + ".txt");
             //System.out.println("Kampanj skapad och sparad i 'OfferDir'");
 
             //skriver i kvitto-fil
@@ -60,29 +70,43 @@ public class Offer {
         }
 
     }
-
+/*
     public void getOfferFromFile() throws FileNotFoundException {
-        File file = new File("OfferDir\\" + name + ".txt");
-        Scanner sc = new Scanner(file);
-        BufferedReader bufferedReader;
+
+        File folder = new File("OfferDir");
+        File[] listOfFiles = folder.listFiles();
+
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                System.out.println(file.getName());
+            }
+
+
+            File fileToRead = new File("OfferDir\\"+ file.getName());
+            Scanner sc = new Scanner(fileToRead);
+            BufferedReader bufferedReader;
         try{
-            bufferedReader = new BufferedReader(new FileReader(file));
+            bufferedReader = new BufferedReader(new FileReader(fileToRead));
             String line;
 
             boolean offerProduct = false;
             while ((line = bufferedReader.readLine()) != null){
-                if (line.contains("Kampanj!!! apelsin 1.0 kr kg i kategorin FRUKT max 3 per kund Ordinarie Pris 20.0 ")) {
+                if (line.contains(toString())) {
                     System.out.println("detta är en kampanj vara");
                     offerProduct = true;
                 }
             }
-            Main.tmplist.add(line);
+            Main.tmpList.add(line);
         } catch (IOException e) {
             System.out.println("Hittade inget erbjudande!!!" + e);
             throw new RuntimeException(e);
         }
 
     }
+
+    }
+
+ */
 
 
 

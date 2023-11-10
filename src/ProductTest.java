@@ -9,10 +9,13 @@ Product p2;
 Product p3;
     @BeforeEach
     void setUp() {
-        p1 = new Product("Morot",10,"GRÖNT");
-        p2 = new Product("Äpple",12, "FRUKT");
-        p3 = new Product("Banan",15, "FRUKT");
+        p1 = new Product("Morot",10,"kg", "Grönt");
+        p2 = new Product("Äpple",15, "st", "frukt");
+        p3 = new Product("Banan",15, "st", "frukt");
     }
+
+    //Här kan man skapa en calculatePrice test metod.
+
 
     @Test
     void getName() {
@@ -22,14 +25,14 @@ Product p3;
     @Test
     void getPrice() {
         assertEquals(10, p1.getPrice());
-        assertEquals(0, p2.getPrice());
+        assertEquals(15, p2.getPrice());
 
     }
 
     @Test
     void getCategory() {
       String a = p1.getCategory();
-      assertTrue(a.contains("Grönt") && a.contains("Rotfrukt"));
+      assertTrue(a.contains("Grönt"));
     }
 
 
@@ -55,7 +58,8 @@ Product p3;
 
     @Test
     void toStringTest() {
-        assertTrue(p1.toString().endsWith("kr/kg i kategorin [Grönt, Rotfrukt]"));
-        assertTrue(p2.toString().endsWith(" i kategorin [Grönt, Rotfrukt] *inget pris inlagt*"));
+        assertTrue(p1.toString().endsWith("kr per " + p1.getUnit()));
+        assertTrue(p2.toString().endsWith("kr per " + p2.getUnit()));
+        assertTrue(p3.toString().endsWith("kr per " + p3.getUnit()));
     }
 }

@@ -1,4 +1,5 @@
 import java.io.*;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.Console;
@@ -7,46 +8,13 @@ public class Main {
     public static ArrayList<Product> listOfProducts = new ArrayList<Product>();
     public static ArrayList<Product> shoppingItems = new ArrayList<Product>();
     public static ArrayList<Offer> offerList = new ArrayList<Offer>();
-    public static ArrayList<String> tmplist = new ArrayList<String>();
+    public static ArrayList<String> tmpList = new ArrayList<>();
 
     static Scanner input = new Scanner(System.in);
 
     public static void main(String[] args) throws FileNotFoundException {
-        listOfProducts.add(new Product("Äpple", 23.90,"kg", "FRUKT"));
-        listOfProducts.add(new Product("Apelsin", 26.90,"kg", "FRUKT"));
-        listOfProducts.add(new Product("Banan", 25.90,"kg", "FRUKT"));
-        listOfProducts.add(new Product("Avocado", 19.90,"st", "FRUKT"));
-        listOfProducts.add(new Product("Citron", 10,"st", "GRÖNT"));
-        listOfProducts.add(new Product("Morot", 10,"kg", "GRÖNT"));
-        listOfProducts.add(new Product("Gurka", 15,"st", "GRÖNT"));
-        listOfProducts.add(new Product("Sallad", 15,"st", "GRÖNT"));
-        listOfProducts.add(new Product("Tomat", 29.90,"kg", "GRÖNT"));
-
-        for (int i = 0; i < listOfProducts.size(); i++) {
-            Product foundProduct = listOfProducts.get(i);
-            if ("Banan".equals(foundProduct.getName())){
-                foundProduct.setPrice(15);
-                offerList.add(new Offer(foundProduct, 15, 25, "max 5kg per kund",5,"max" ));
-            }
-            if ("Citron".equals(foundProduct.getName())){
-                foundProduct.setPrice(15);
-                offerList.add(new Offer(foundProduct, 5, 10, "vid köp av minst 2 st",2,"mini" ));
-            }
-            if ("Morot".equals(foundProduct.getName())){
-                foundProduct.setPrice(5);
-                offerList.add(new Offer(foundProduct, 5, 10, "vid köp av minst 2 kg",2,"mini" ));
-            }
-            if ("Apelsin".equals(foundProduct.getName())){
-                foundProduct.setPrice(15);
-                offerList.add(new Offer(foundProduct, 15, 26.90, "max 2kg per kund",2,"max" ));
-            }
-
-        }
-
-
-
-
-
+        addProductsForTesting();
+        //offerFromFile();
         boolean exitMenu = false;
         do {
             System.out.println("Välkommen till Matbutiken");
@@ -91,15 +59,22 @@ public class Main {
         }
 
     }
+    /*
+    public static void offerFromFile (){
+        Offer a = new Offer();
+    }
+
+     */
 
     public static boolean intelliJLogin() throws IOException {
 
         boolean found = false;
         do {
             System.out.println("Skriv användarnamn: ");
-            String username = input.nextLine();
+            String username = checkIfBlankOrExit();
             System.out.println("Skriv lösenord: ");
-            String password = input.nextLine();
+            String password = checkIfBlankOrExit();
+
             found = Admin.getUserInfo(username, password);
             if (found) {
                 adminSite();
@@ -126,9 +101,7 @@ public class Main {
 
             char[] passwordChars = console.readPassword("Skriv Lösenord: ");
             String password = new String(passwordChars);
-            console.printf("password entered was: %s%n", new String(passwordChars));
             found = Admin.getUserInfo(username, password);
-            //System.out.printf("***%s***%s***%n",username, password);
             if (found) {
                 adminSite();
             } else {
@@ -300,6 +273,7 @@ public class Main {
         double totalPrice = 0;
         double totalPrice1 = 0;
         double totalPrice2 = 0;
+        double totalUnits = 0;
 
         do {
             System.out.println(ConsoleColor.BLUE);
@@ -345,8 +319,12 @@ public class Main {
                     if (confirm.equalsIgnoreCase(chosenProduct.getName())) {
                         System.out.println("du valde: " + chosenProduct.getName());
 
-                        System.out.print("hur många "+ chosenProduct.getUnit() +"(endast siffror): " );
-                        double totalUnits = checkDouble();
+                        System.out.print("hur många "+ chosenProduct.getUnit() +"(endast siffror använd PUNKT INTE KOMMATECKEN): " );
+                        if (chosenProduct.getUnit().equalsIgnoreCase("st")){
+                            totalUnits = (int)totalUnits;
+                        } else {
+                            totalUnits = checkDouble();
+                        }
                         for (Offer offerProduct : offerList){
                             if (chosenProduct.equals(offerProduct.getName())){
                                 limit = checkLimit(totalUnits,offerProduct.getOfferLimit(),offerProduct.getMaxOrMini());
@@ -379,11 +357,13 @@ public class Main {
                             totalPrice = calculatePrice(chosenProduct.getPrice(), totalUnits);
                             break;
                         }
-                        System.out.print("Vill du lägga till " + chosenProduct.getName() + " för " + totalPrice + "kr?\n1. Ja\n2. Nej, gå tillbaka\n\u001B[34mDitt val: \u001B[0m");
+                        System.out.printf("Vill du lägga till %s för %.2fkr?", chosenProduct.getName(), totalPrice);
+                        System.out.print("\n1. Ja\n2. Nej, gå tillbaka\n\u001B[34mDitt val: \u001B[0m");
                         answer = checkIfBlankOrExit();
 
                         if (answer.equals("1")) {
-                            Product p1 = new Product(chosenProduct, totalPrice, totalUnits, chosenProduct.getUnit());
+
+                            Product p1 = new Product(chosenProduct, (int)totalPrice, totalUnits, chosenProduct.getUnit());
                             shoppingItems.add(p1);
 
                         }
@@ -402,7 +382,12 @@ public class Main {
                     //for
                 }
                 shoppingCart1 = new ShoppingCart(sum, shoppingItems.size(), shoppingItems);
-                System.out.println("Kundvagn\n" + shoppingItems);
+                if (shoppingItems.isEmpty()){
+                    System.out.println("Kundvagnen är tom");
+                } else {
+                    System.out.println("Kundvagn\n" + shoppingItems);
+                }
+
 
 
         } while (!exitShop);
@@ -541,7 +526,7 @@ public class Main {
         for (Product product : listOfProducts) {
             boolean productFound = false;
             for (String allUniqueCategory : allUniqueCategories) {
-                if (allUniqueCategory.equals(product.getCategory())) {
+                if (allUniqueCategory.equalsIgnoreCase(product.getCategory())) {
                     productFound = true;
                     break;
                 }
@@ -560,8 +545,7 @@ public class Main {
         }
     }
     public static double calculatePrice(double price, double inputKilo) {
-        double sum = price * inputKilo;
-        return sum;
+        return price * inputKilo;
     }
     public static void editProduct() {
         boolean exitEdit = false;
@@ -634,7 +618,7 @@ public class Main {
                         newPrice = input.nextDouble();
                         newInput = true;
                     } catch (Exception e) {
-                        System.out.println("Ange siffror! ");
+                        System.out.println("Ange siffror använd kommatecken! ");
                         input.next();
                     }
                 }
@@ -684,6 +668,38 @@ public class Main {
                 }
                 break;
             }
+        }
+    }
+    public static void addProductsForTesting(){
+        listOfProducts.add(new Product("Äpple", 23.90,"kg", "FRUKT"));
+        listOfProducts.add(new Product("Apelsin", 26.90,"kg", "FRUKT"));
+        listOfProducts.add(new Product("Banan", 25.90,"kg", "FRUKT"));
+        listOfProducts.add(new Product("Avocado", 19.90,"st", "FRUKT"));
+        listOfProducts.add(new Product("Citron", 10,"st", "GRÖNT"));
+        listOfProducts.add(new Product("Morot", 10,"kg", "GRÖNT"));
+        listOfProducts.add(new Product("Gurka", 15,"st", "GRÖNT"));
+        listOfProducts.add(new Product("Sallad", 15,"st", "GRÖNT"));
+        listOfProducts.add(new Product("Tomat", 29.90,"kg", "GRÖNT"));
+
+        for (int i = 0; i < listOfProducts.size(); i++) {
+            Product foundProduct = listOfProducts.get(i);
+            if ("Banan".equals(foundProduct.getName())){
+                foundProduct.setPrice(15);
+                offerList.add(new Offer(foundProduct, 15, 25, "max 5kg per kund",5,"max" ));
+            }
+            if ("Citron".equals(foundProduct.getName())){
+                foundProduct.setPrice(15);
+                offerList.add(new Offer(foundProduct, 5, 10, "vid köp av minst 2 st",2,"mini" ));
+            }
+            if ("Morot".equals(foundProduct.getName())){
+                foundProduct.setPrice(5);
+                offerList.add(new Offer(foundProduct, 5, 10, "vid köp av minst 2 kg",2,"mini" ));
+            }
+            if ("Apelsin".equals(foundProduct.getName())){
+                foundProduct.setPrice(15);
+                offerList.add(new Offer(foundProduct, 15, 26.90, "max 2kg per kund",2,"max" ));
+            }
+
         }
     }
 }
