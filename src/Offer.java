@@ -16,21 +16,8 @@ public class Offer implements  Serializable{
         this.regularPrice = regularPrice;
         this.offerLimit = offerLimit;
         this.maxOrMini = maxOrMini;
-        //createNewOffer();
 
     }
-    /*
-    public Offer() {
-        try {
-            getOfferFromFile();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-     */
-
-
 
     public String getMaxOrMini() {
         return maxOrMini;
@@ -39,80 +26,6 @@ public class Offer implements  Serializable{
     public void setMaxOrMini(String maxOrMini) {
         this.maxOrMini = maxOrMini;
     }
-/*
-    public void createNewOffer() {
-        File offerFile;
-        File offerDir = new File("OfferDir");
-
-        if(!offerDir.exists()){
-            boolean created = offerDir.mkdirs();
-            if(created){
-                //System.out.println("Kvitto mapp skapad framgångsrikt");
-            } else {
-                //System.out.println("Mappen skapades inte");
-            }
-        } else {
-            // System.out.println("Mappen finns redan");
-        }
-        try {
-            //skapar kvitto-fil
-
-            offerFile = new File(offerDir, this.name.getName() + ".txt");
-            //System.out.println("Kampanj skapad och sparad i 'OfferDir'");
-
-            //skriver i kvitto-fil
-            FileWriter fileWriter = new FileWriter(offerFile);
-            fileWriter.write(toString());
-
-            fileWriter.close();
-        } catch (IOException e) {
-            System.out.println("kunde inte skapa kampanj");
-        }
-
-    }
-/*
-    public void getOfferFromFile() throws FileNotFoundException {
-
-        File folder = new File("OfferDir");
-        File[] listOfFiles = folder.listFiles();
-
-        for (File file : listOfFiles) {
-            if (file.isFile()) {
-                System.out.println(file.getName());
-            }
-
-
-            File fileToRead = new File("OfferDir\\"+ file.getName());
-            Scanner sc = new Scanner(fileToRead);
-            BufferedReader bufferedReader;
-        try{
-            bufferedReader = new BufferedReader(new FileReader(fileToRead));
-            String line;
-
-            boolean offerProduct = false;
-            while ((line = bufferedReader.readLine()) != null){
-                if (line.contains(toString())) {
-                    System.out.println("detta är en kampanj vara");
-                    offerProduct = true;
-                }
-            }
-            Main.tmpList.add(line);
-        } catch (IOException e) {
-            System.out.println("Hittade inget erbjudande!!!" + e);
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    }
-
- */
-
-
-
-
-
-
 
     public double getRegularPrice() {
         return regularPrice;

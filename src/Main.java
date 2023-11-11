@@ -589,7 +589,7 @@ public class Main {
                 if (userConfirm.equalsIgnoreCase((product).getName())) {
 
                     System.out.println("Du valde: " + userConfirm);
-                    System.out.print("Hur många kilo?: ");
+                    System.out.print("Hur många " + product.getUnit() + "?: ");
                     boolean weight = false;
                     while (!weight) {
                         try {
@@ -670,12 +670,14 @@ public class Main {
         return price * inputKilo;
     }
     public static void editKampanj(){
+
         double newOfferPrice = 0;
         String whatToChange = null;
         String offerToChange = null;
         Offer found = null;
         String chosenOffer = null;
         showAllKampanj();
+        System.out.println(ConsoleColor.CYAN);
         System.out.println("Sök på kampanj du vill ändra: ");
         chosenOffer = checkIfBlankOrExit();
         found = charSearchOffer(offerList,chosenOffer);
@@ -695,7 +697,7 @@ public class Main {
 
                     switch (whatToChange){
                         case "1" -> {
-                            System.out.println("Skriv nytt kampanjpris");
+                            System.out.println("Skriv nytt kampanjpris (med PUNKT för decimaltecken");
                             newOfferPrice = checkDouble();
                             offerList.get(i).getName().setPrice(newOfferPrice);
                             saveOfferListToFile();
@@ -711,6 +713,7 @@ public class Main {
                 }
             }
         }
+        System.out.println(ConsoleColor.RESET);
 
     }
     public static void editProduct() throws IOException {
@@ -744,16 +747,19 @@ public class Main {
                         if (userConfirm.equalsIgnoreCase(listOfProducts.get(i).getName())) {
                             System.out.println("Alternativ för: " + listOfProducts.get(i));
                             foundIt = true;
-                        }  else {
-                            System.out.println("Hittade inget");
-                            editProduct();
                         }
-
-
                     }
+                    if (!foundIt) {
+                        System.out.println("Hittade inget");
+                        editProduct();
+                    }
+
+
+
+
                 } while (!foundIt);
 
-                //en till metod för att väga???
+
                 System.out.println("1. Ändra pris ");
                 System.out.println("2. Ändra namn");
                 System.out.println("3. Radera");
@@ -799,19 +805,22 @@ public class Main {
         }
     }
     public static void changeName(String chosenProduct) {
-        for (Product listOfProduct : listOfProducts) {
-            if (chosenProduct.equalsIgnoreCase(listOfProduct.getName())) {
+        Product foundItem = null;
+        for (int i = 0; i < listOfProducts.size(); i++) {
+            foundItem = listOfProducts.get(i);
+            if (chosenProduct.equalsIgnoreCase(listOfProducts.get(i).getName())) {
                 System.out.print("(tryck 0 för huvudmeny)\nSkriv nytt namn: ");
-                String newName = checkIfBlankOrExit();
-                if (newName.equals("0")) {
-                    break;
-                }
-                listOfProduct.setName(newName);
-                saveProductListToFile();
-                System.out.println("Namnet för " + chosenProduct + " har ändrats till " + newName);
+                break;
             }
-            break;
+
         }
+            String newName = checkIfBlankOrExit();
+
+            foundItem.setName(newName);
+            saveProductListToFile();
+            System.out.println("Namnet för " + chosenProduct + " har ändrats till " + newName);
+
+
     }
     public static void deleteProduct(String chosenProduct) {
         for (int i = 0; i < listOfProducts.size(); i++) {
