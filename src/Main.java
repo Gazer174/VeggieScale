@@ -379,6 +379,10 @@ public class Main {
         double totalPrice1 = 0;
         double totalPrice2 = 0;
         double totalUnits = 0;
+        boolean foundOffer;
+        String nameOfProduct = null;
+
+        Offer offer = null;
 
         do {
             System.out.println(ConsoleColor.BLUE);
@@ -423,6 +427,7 @@ public class Main {
             if (found != null) {
                 String answer;
                 boolean limit = true;
+                foundOffer = false;
                 for (Product chosenProduct : listOfProducts) {
 
                     if (confirm.equalsIgnoreCase(chosenProduct.getName())) {
@@ -435,46 +440,79 @@ public class Main {
                             totalUnits = checkDouble();
                         }
                         for (Offer offerProduct : offerList){
-                            if (chosenProduct.getName().equals(offerProduct.getName().getName())){
+                            if (chosenProduct.getName().equalsIgnoreCase(offerProduct.getName().getName())){
+                                foundOffer = true;
                                 limit = checkLimit(totalUnits,offerProduct.getOfferLimit(),offerProduct.getMaxOrMini());
                                 if (!limit){
                                     if (offerProduct.getMaxOrMini().equals("max")){
-                                        System.out.println("Du får " + (int)offerProduct.getOfferLimit() + " " + offerProduct.getName().getUnit() + " till kampanjpris, resterande till ordinare pris.");
+                                        /*if (totalUnits < offerProduct.getOfferLimit()){
+                                            totalPrice = calculatePrice(offerProduct.getOfferPrice(), totalUnits);
+                                            nameOfProduct = offerProduct.getName().getName();
+                                            break;
+                                        }
+
+                                         */
                                         totalPrice1 = calculatePrice(offerProduct.getOfferLimit(), offerProduct.getOfferPrice());
-                                        totalPrice2 = calculatePrice(offerProduct.getRegularPrice(), (totalUnits - offerProduct.getOfferLimit()));
+                                        totalPrice2 = calculatePrice(chosenProduct.getPrice(), (totalUnits - offerProduct.getOfferLimit()));
                                         totalPrice = (totalPrice1 + totalPrice2);
+                                        nameOfProduct = offerProduct.getName().getName();
+
+                                        System.out.println("Du får " + (int)offerProduct.getOfferLimit() + " " + offerProduct.getName().getUnit() + " till kampanjpris, resterande till ordinare pris.");
+                                        break;
                                     }
                                     if (offerProduct.getMaxOrMini().equals("mini")){
-                                        System.out.println(ConsoleColor.GREEN);
-                                        System.out.println("om du köper " + offerProduct.getOfferLimit() + offerProduct.getName().getUnit() + " får du dom för " + offerProduct.getOfferPrice() + "kr/" + offerProduct.getName().getUnit());
-                                        System.out.println("1. Fortsätta med erbjudandet");
-                                        System.out.println("2. Fortsätta med Ordinare pris");
-                                        System.out.println(ConsoleColor.RESET);
-                                        System.out.print("Ditt val: ");
-                                        String offerChoice = input.nextLine();
-                                        if (offerChoice.equals("1")){
-                                            totalPrice = calculatePrice(offerProduct.getOfferLimit(), offerProduct.getOfferPrice());
-                                            totalUnits = offerProduct.getOfferLimit();
-                                        }
-                                        if (offerChoice.equals("2")){
-                                            totalPrice = calculatePrice(offerProduct.getRegularPrice(), totalUnits);
-                                        }
+
+                                            System.out.println(ConsoleColor.GREEN);
+                                            System.out.println("om du köper " + offerProduct.getOfferLimit() + offerProduct.getName().getUnit() + " får du dom för " + offerProduct.getOfferPrice() + "kr/" + offerProduct.getName().getUnit());
+                                            System.out.println("1. Fortsätta med erbjudandet");
+                                            System.out.println("2. Fortsätta med Ordinare pris");
+                                            System.out.println(ConsoleColor.RESET);
+                                            System.out.print("Ditt val: ");
+                                            String offerChoice = input.nextLine();
+                                            if (offerChoice.equals("1")){
+                                                totalPrice = calculatePrice(offerProduct.getOfferLimit(), offerProduct.getOfferPrice());
+                                                totalUnits = offerProduct.getOfferLimit();
+                                                nameOfProduct = offerProduct.getName().getName();
+                                            }
+                                            if (offerChoice.equals("2")){
+                                                totalPrice = calculatePrice(chosenProduct.getPrice(), totalUnits);
+                                                nameOfProduct = offerProduct.getName().getName();
+                                            }
+
+
                                     }
+
+                                } else {
+                                    totalPrice = calculatePrice(offerProduct.getOfferPrice(), totalUnits);
+                                    nameOfProduct = offerProduct.getName().getName();
+                                    break;
+
                                 }
+
+                            } else {
+                                totalPrice = calculatePrice(chosenProduct.getPrice(), totalUnits);
+                                nameOfProduct = chosenProduct.getName();
                             }
+
                         }
+
+
+                        /*
                         while (limit){
-                            totalPrice = calculatePrice(chosenProduct.getPrice(), totalUnits);
-                            break;
+
                         }
-                        System.out.printf("Vill du lägga till %.2f %s %s för %.2fkr?",totalUnits, chosenProduct.getUnit() , chosenProduct.getName(), totalPrice);
+
+                         */
+
+
+                        System.out.printf("Vill du lägga till %.2f %s %s för %.2fkr?",totalUnits, chosenProduct.getUnit() , nameOfProduct, totalPrice);
                         System.out.print("\n1. Ja\n2. Nej, gå tillbaka\n\u001B[34mDitt val: \u001B[0m");
                         answer = checkIfBlankOrExit();
-
                         if (answer.equals("1")) {
 
-                            Product p1 = new Product(chosenProduct, (int)totalPrice, totalUnits, chosenProduct.getUnit());
+                            Product p1 = new Product(nameOfProduct, (int)totalPrice, totalUnits, chosenProduct.getUnit());
                             shoppingItems.add(p1);
+                            break;
 
                         }
                         if (answer.equals("2")) {

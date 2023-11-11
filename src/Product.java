@@ -25,8 +25,8 @@ public class  Product  implements Serializable {
         this.unit = unit;
     }
 
-    public Product(Product product, double price, double totalOfProducts, String unit) {
-        this.name = product.getName();
+    public Product(String name, double price, double totalOfProducts, String unit) {
+        this.name = name;
         this.price = price;
         this.totalOfProducts = totalOfProducts;
         this.unit = unit;

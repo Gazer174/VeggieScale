@@ -17,6 +17,7 @@ public class Offer implements  Serializable{
         this.offerLimit = offerLimit;
         this.maxOrMini = maxOrMini;
 
+
     }
 
     public String getMaxOrMini() {
