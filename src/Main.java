@@ -218,12 +218,20 @@ public class Main {
         } while (!exitAddProduct);
     }
     private static void saveOfferListToFile(){
+        Path currentWorkingdir = Paths.get("").toAbsolutePath();
+        File file;
+        String path = currentWorkingdir + File.separator + "OfferList.txt";
+
+        file = new File(path);
+        if (!file.exists()){
+            path = currentWorkingdir + File.separator + "src" + File.separator + "OfferList.txt";
+        }
         try {
-            Path path = Paths.get("OfferList.txt");
-            if(!Files.exists(path)){
-                Files.createFile(path);
+            Path pathToRead = Paths.get(path);
+            if(!Files.exists(pathToRead)){
+                Files.createFile(pathToRead);
             }
-            FileOutputStream fileOutputStream = new FileOutputStream("OfferList.txt");
+            FileOutputStream fileOutputStream = new FileOutputStream(path);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(offerList);
             objectOutputStream.flush();
@@ -235,19 +243,27 @@ public class Main {
         }
     }
     private static void readOfferListToFile(){
+        Path currentWorkingdir = Paths.get("").toAbsolutePath();
+        File file;
+        String path = currentWorkingdir + File.separator + "OfferList.txt";
+
+        file = new File(path);
+        if (!file.exists()){
+            path = currentWorkingdir + File.separator + "src" + File.separator + "OfferList.txt";
+        }
         try {
-            Path path = Paths.get("OfferList.txt");
-            if(!Files.exists(path)){
+            Path pathToRead = Paths.get(path);
+            if(!Files.exists(pathToRead)){
                 System.err.println("there is no file with offers yet");
-                Files.createFile(path);
+                Files.createFile(pathToRead);
                 return;
             }
-            FileInputStream fileInputStream = new FileInputStream("OfferList.txt");
+            FileInputStream fileInputStream = new FileInputStream(path);
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
             offerList = (ArrayList<Offer>) objectInputStream.readObject();
             objectInputStream.close();
         }catch (FileNotFoundException exp){
-            System.err.println("File for saving products wasn't found");
+            System.err.println("File for reading products wasn't found");
         }catch (IOException exp){
             System.err.println("A error  has acured while reading from file");
         }catch (ClassNotFoundException exp){
@@ -256,12 +272,20 @@ public class Main {
     }
 
     private static void saveProductListToFile(){
+        Path currentWorkingdir = Paths.get("").toAbsolutePath();
+        File file;
+        String path = currentWorkingdir + File.separator + "ListOfProducts.txt";
+
+        file = new File(path);
+        if (!file.exists()){
+            path = currentWorkingdir + File.separator + "src" + File.separator + "ListOfProducts.txt";
+        }
         try {
-            Path path =  Paths.get("ListOfProducts.txt");
-            if(!Files.exists(path)){
-                Files.createFile(path);
+            Path pathToRead =  Paths.get(path);
+            if(!Files.exists(pathToRead)){
+                Files.createFile(pathToRead);
             }
-            FileOutputStream fileOutputStream = new FileOutputStream("ListOfProducts.txt");
+            FileOutputStream fileOutputStream = new FileOutputStream(path);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(listOfProducts);
             objectOutputStream.flush();
@@ -273,19 +297,27 @@ public class Main {
         }
     }
     private static void readProductListToFile(){
+        Path currentWorkingdir = Paths.get("").toAbsolutePath();
+        File file;
+        String path = currentWorkingdir + File.separator + "ListOfProducts.txt";
+
+        file = new File(path);
+        if (!file.exists()){
+            path = currentWorkingdir + File.separator + "src" + File.separator + "ListOfProducts.txt";
+        }
         try {
-            Path path =  Paths.get("ListOfProducts.txt");
-            if(!Files.exists(path)){
+            Path pathToRead =  Paths.get(path);
+            if(!Files.exists(pathToRead)){
                 System.err.println("there is no file with products yet");
-                Files.createFile(path);
+                Files.createFile(pathToRead);
                 return;
             }
-            FileInputStream fileInputStream = new FileInputStream("ListOfProducts.txt");
+            FileInputStream fileInputStream = new FileInputStream(path);
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
             listOfProducts = (ArrayList<Product>) objectInputStream.readObject();
             objectInputStream.close();
         }catch (FileNotFoundException exp){
-            System.err.println("File for saving products wasn't found");
+            System.err.println("File for reading products wasn't found");
         }catch (IOException exp){
             System.err.println("A error  has acured while writing to file");
         }catch (ClassNotFoundException exp){
@@ -334,7 +366,6 @@ public class Main {
 
                 System.out.print("Skriv nytt kampanjpris (endast siffror och punkt!): ");
                 offerPrice = checkDouble();
-                foundPro.setPrice(offerPrice);
 
                 Offer a = new Offer(foundPro, offerPrice, foundProPrice, offerText,offerLimit, maxOrMini);
                 offerList.add(a);
@@ -767,7 +798,7 @@ public class Main {
             System.out.println("Sök på KATEGORI eller PRODUKTNAMN: ");
             String userSearch = checkIfBlankOrExit();
             if (userSearch.equals("0")) {
-                adminSite();
+                break;
             }
             found = charSearchProduct(listOfProducts, userSearch);
 
@@ -775,12 +806,14 @@ public class Main {
 
             if (found != null) {
                 boolean foundIt = false;
+                System.out.print("BEKRÄFTA PRODUKTNAMN FÖR REDIGERING: ");
+                userConfirm = checkIfBlankOrExit();
+                if (userConfirm.equals("0")){
+                    break;
+                }
+
                 do {
-                    System.out.print("BEKRÄFTA PRODUKTNAMN FÖR REDIGERING: ");
-                    userConfirm = checkIfBlankOrExit();
-                    if (userConfirm.equals("0")) {
-                        foundIt = true;
-                    }
+
                     for (int i = 0; i < listOfProducts.size(); i++) {
                         if (userConfirm.equalsIgnoreCase(listOfProducts.get(i).getName())) {
                             System.out.println("Alternativ för: " + listOfProducts.get(i));
@@ -817,7 +850,6 @@ public class Main {
                 System.out.println("Hittade inget. Sök på tex 'GRÖNT' eller 'Banan'");
                 editProduct();
             }
-            exitEdit = true;
         } while (!exitEdit);
     }
     public static void changePrice(String chosenProduct) {
@@ -839,6 +871,7 @@ public class Main {
                 listOfProduct.setPrice(newPrice);
                 System.out.println("Priset för " + chosenProduct + " har ändrats till " + newPrice + "kr");
                 saveProductListToFile();
+
             }
         }
     }

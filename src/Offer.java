@@ -64,7 +64,7 @@ public class Offer implements  Serializable{
     @Override
     public String toString() {
 
-        return "Kampanj!!! " + name + " " + text + " Ordinarie Pris " + regularPrice + "kr/" + name.getUnit();
+        return "Kampanj!!! " + name.getName() + " " + getOfferPrice() + " kr/"+ name.getUnit() + " " + text + " Ordinarie Pris " + regularPrice + "kr/" + name.getUnit();
 
     }
 }

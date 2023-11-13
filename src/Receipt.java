@@ -29,6 +29,7 @@ public class Receipt {
         if(!receiptDir.exists()){
             boolean created = receiptDir.mkdirs();
             if(created){
+                //om man vill ha utskrift
                 //System.out.println("Kvitto mapp skapad framgångsrikt");
             } else {
                 //System.out.println("Mappen skapades inte");
